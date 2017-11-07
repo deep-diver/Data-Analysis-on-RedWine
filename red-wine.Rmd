@@ -14,6 +14,7 @@ library(ggplot2)
 library(cowplot)
 library(GGally)
 library(corrplot)
+library(psych)
 ```
 
 # Univariate Plots Section
@@ -214,7 +215,7 @@ It looks like most wines have sulphate between 0.5 and 0.9.
 ### What is the structure of your dataset?
 There are 1,599 diamonds in the dataset with 12 features (fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, alcohol, and quality). The "quality" variable can be represented as a factor variable.
 
-(worst) —————-> (best)
+(worst) ???????????????-> (best)
 
 **Quality**: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
@@ -241,3 +242,19 @@ Not necessarily. The only consideration is to make quality variable to be a fact
 For the variable, "alcohol", I zoomed the distribution in a bit. I found that alcohol is not a continuous variable. 2nd decimal point is rarely appeared whereas the alcohol value jumps by the 1st decimal point.
 
 # Bivariate Plots Section
+```{r echo=FALSE}
+rwd_cor <- round(cor(rwd), 3)
+```
+
+The most correlated variable's coefficiency is 0.476, and that is alcohol. Therefore, there aren't a variable strongly correlated to the quality by looking at the coefficiency chart above. There are variables showing somewhat weekly related, but most of variables seem not correlated. I think I should look into each of those in more detail.
+
+```{r fig.align='center', echo=FALSE}
+corrplot.mixed(rwd_cor, upper = 'square', lower = 'number')
+pairs.panels(rwd, 
+             method = "pearson", # correlation method
+             hist.col = "#00AFBB",
+             density = TRUE,  # show density plots
+             ellipses = TRUE # show correlation ellipses
+             )
+```
+
