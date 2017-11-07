@@ -1,0 +1,243 @@
+---
+title: "Red Wine Data Analysis"
+author: "Chansung, Park"
+date: "10/31/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE}
+library(ggplot2)
+library(cowplot)
+library(GGally)
+library(corrplot)
+```
+
+# Univariate Plots Section
+
+```{r echo=FALSE}
+rwd <- read.csv('./wineQualityReds.csv')[2:13]
+str(rwd)
+summary(rwd)
+```
+
+### meaning of each variable
+- **Fixed Acidity**: most acids involved with wine or fixed or nonvolatile (do not evaporate readily)
+- **Volatile Acidity**: the amount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste
+- **Citric Acid**: found in small quantities, citric acid can add 'freshness' and flavor to wines
+- **Residual Sugar**: the amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet
+- **Chlorides**: the amount of salt in the wine
+- **Free Sulfur Dioxide**: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine
+- **Total Sulfur Dioxide**: amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+- **Density**: the density of water is close to that of water depending on the percent alcohol and sugar content
+- **pH**: describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale
+- **Sulphates**: a wine additive which can contribute to sulfur dioxide gas (S02) levels, which acts as an antimicrobial and antioxidant 
+- **Alcohol**: the percent alcohol content of the wine
+- **Quality**: score between 0 and 10
+
+Red wine dataset consists of 13 variables, with 1599 observations (records).
+
+```{r echo=FALSE, fig.align='center'}
+ggplot(data=rwd, aes(x=quality)) + 
+  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(breaks = seq(min(rwd$quality), max(rwd$quality), 1))
+```
+
+The quality of wine ranges from 0 to 10. Only wines in quality from 3 to 8 exists in this dataset. Quality score, 5 and 6, are the most common ones. From that points, the number of wines decreases at bigger chance when quality score increases or decreases. Finally, it seems to be hard to find many wines marked as quality score 3 and 8. I wonder what makes to reduce the number of wines between qualities like 3 and 4, or 4 and 5, or 6 and 7, or 7 and 8. But, first, I want to know what this plot looks across other variables.
+
+```{r echo=FALSE, fig.align='center'}
+acidity.fixed <- ggplot(rwd, aes(x=fixed.acidity)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9') +
+  xlab('fixed acidity')
+
+acidity.volatile <- ggplot(rwd, aes(x=volatile.acidity)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9') +
+  xlab('volatile acidity')
+
+plot_grid(acidity.fixed, acidity.volatile,
+          ncol = 2)
+```
+
+Two graphs have similar shape like having mountain in the middle, and the mountain shape indicates the range of where the majority number of wines are located. On the left and right side of the most common values, the count value rapidly decreases. This kind of trend seems similar to the quality value. I wonder how they are related. 
+
+```{r echo=FALSE, fig.align='center'}
+citric.smallbin <- ggplot(rwd, aes(x=citric.acid)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9') + 
+  xlab('citric.acid(bins=20)')
+
+citric.largebins <- ggplot(rwd, aes(x=citric.acid)) + 
+  geom_histogram(bins = 50, color = 'black', fill = '#099DD9') + 
+  xlab('citric.acid(bins=50)')
+
+plot_grid(citric.smallbin, citric.largebins, ncol = 1)
+```
+
+```{r echo=FALSE}
+summary(rwd$citric.acid)
+```
+
+The minimum value is 0, and the maximum value is 1 for citric acid. With the 20 bins, it looks the value fluctuates. After larging the number of bin, there are particularly many wines at citric acid value 0 and 0.5. I wonder what quality the wines in those citric acid values have.
+
+```{r fig.align='center', echo=FALSE}
+sugar <- ggplot(rwd, aes(x=residual.sugar)) +
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
+
+sugar.log <- ggplot(rwd, aes(x=residual.sugar)) +
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9') +
+  scale_x_log10() + 
+  xlab('log(residual sugar)')
+
+plot_grid(sugar, sugar.log, ncol = 1)
+```
+
+The shape of the graph looks similar to fixed acidity and volatile acidity. I wonder how these 3 variables are related.
+
+```{r echo=FALSE}
+chlorides <- ggplot(rwd, aes(x=chlorides)) + 
+  geom_histogram(bins = 100, color = 'black', fill = '#099DD9') + 
+  xlab('chlorides (bins=50)')
+
+chlorides.log <- ggplot(rwd, aes(x=chlorides)) + 
+  geom_histogram(bins = 100, color = 'black', fill = '#099DD9') + 
+  scale_x_log10() + 
+  xlab('log(chlorides/bins=50)')
+
+plot_grid(chlorides, chlorides.log, ncol = 2)
+```
+
+```{r}
+summary(rwd$chlorides)
+```
+
+Most wines have a chloride level between 0.07 and 0.09: median 0.079 and mean 0.08747. Even with log scaled distribution, lots of data are crowded in a very small range of chloride. I wonder if the most common chloride level is related to the worse or better quality.
+
+```{r fig.align='center', echo=FALSE}
+free_sulfur_dioxide <- ggplot(rwd, aes(x=free.sulfur.dioxide)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9') 
+
+total_sulfur_dioxide <- ggplot(rwd, aes(x=total.sulfur.dioxide)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
+
+free_sulfur_dioxide.log <- ggplot(rwd, aes(x=free.sulfur.dioxide)) + 
+  geom_histogram(bins = 30, color = 'black', fill = '#099DD9') +
+  scale_x_log10() + 
+  xlab('log(free sulfur dioxide)')
+
+total_sulfur_dioxide.log <- ggplot(rwd, aes(x=total.sulfur.dioxide)) + 
+  geom_histogram(bins = 50, color = 'black', fill = '#099DD9') + 
+  scale_x_log10() + 
+  xlab('log(total sulfur dioxide)')
+
+plot_grid(free_sulfur_dioxide, total_sulfur_dioxide, 
+          free_sulfur_dioxide.log, total_sulfur_dioxide.log, 
+          ncol=2)
+```
+
+Dioxide is measured in 2 different parts, free sulfur dioxide and total sulfur dioxide. They seem to show similar trend since total sulfur dioxide is the superset. I wonder wheather total sulfur dioxide has more impact on determining the quality of wine than just with free sulfur dioxide. For example, free sulfur dioxide graph shows a sink around value between 8 and 10. But total sulfur dioxide looks like more complete form.
+
+```{r fig.align='center', echo=FALSE}
+ggplot(rwd, aes(x=density)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
+```
+
+```{r}
+summary(rwd$density)
+```
+
+It is said that density is depending on the percent alcohol and sugar content. Residual sugar shows similar trend. I wonder if alcohol also shows similar trend. I also wonder if density would have very close trend when I combine residual sugar and alcohol values together.
+
+```{r fig.align='center', echo=FALSE}
+alcohol.small <- ggplot(rwd, aes(x=alcohol)) + 
+  geom_histogram(bins = 15, color = 'black', fill = '#099DD9') + 
+  xlab('alcohol (bins=15)')
+
+alcohol.large <- ggplot(rwd, aes(x=alcohol)) + 
+  geom_histogram(bins = 150, color = 'black', fill = '#099DD9') + 
+  scale_x_continuous(breaks = seq(min(rwd$alcohol), max(rwd$alcohol), 0.5)) + 
+  xlab('alcohol (bins=150)')
+
+alcohol.xlarge <- ggplot(rwd, aes(x=alcohol)) + 
+  geom_histogram(color = 'black', fill = '#099DD9') + 
+  scale_x_continuous(limits = c(9.1, 9.7), breaks = seq(9.1, 9.7, 0.1)) +
+  scale_y_sqrt()
+
+plot_grid(alcohol.small, alcohol.large, alcohol.xlarge, ncol=1)
+```
+
+alcohol shows somewhat unexpected result comparing to density and residual sugar. After drawing the same graph with bigger bins, I get interested in how the values are distributed. There are very small number or zero number of wine at some alcohol levels. It seems trending like having lots of wine 3 times then no wine and so on. So, I zoomed in only a specific range between 9.1 and 9.7. Alcohol levels seems descrete like there are just few wines in between 9.2 and 9.3, or 9.5 and 9.6.
+
+```{r}
+summary(rwd$alcohol)
+table(rwd$alcohol)
+```
+
+After counting all wines for each alcohol level, I see there is very small number of wine or zero number of wine when alcohol level has more than 2 decimal point. I wonder wines belonging to these alcohol level have anything to do with quality.
+
+```{r fig.align='center', echo=FALSE}
+pH <- ggplot(rwd, aes(x=pH)) + 
+  geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
+
+pH.under <- ggplot(rwd, aes(x=pH)) + 
+  geom_histogram(bins = 50, color = 'black', fill = '#099DD9') + 
+  scale_x_continuous(limits = c(2, 3)) + 
+  xlab('pH < 3.0')
+
+plot_grid(pH, pH.under, ncol=1)
+```
+
+As said that most wines are between 3-4 on the pH scale, I see there are wines under 3.0 of pH. Since they are small in count, I wonder if wines belonging to under 3.0 of pH have good or bad quality.
+
+```{r fig.width=7,  fig.align='center', echo=FALSE}
+
+sulphates <- ggplot(rwd, aes(x=sulphates)) +
+  geom_histogram(bins=30, color = 'black', fill = '#099DD9') + 
+  scale_x_continuous(breaks = seq(0, 2, 0.1))
+
+sulphates.log <- ggplot(rwd, aes(x=sulphates)) + 
+  geom_histogram(bins=30, color = 'black', fill = '#099DD9') + 
+  scale_x_log10(breaks = seq(0, 2, 0.1)) + 
+  xlab('log(sulphates)')
+
+plot_grid(sulphates, sulphates.log, ncol = 1)
+```
+
+```{r}
+summary(rwd$sulphates)
+```
+
+It looks like most wines have sulphate between 0.5 and 0.9. 
+
+# Univariate Analysis
+### What is the structure of your dataset?
+There are 1,599 diamonds in the dataset with 12 features (fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, alcohol, and quality). The "quality" variable can be represented as a factor variable.
+
+(worst) —————-> (best)
+
+**Quality**: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
+Observations:
+
+- Most wines have quality between 5 and 6.
+
+- About 75% of wines have alcohol more than 9.5%.
+
+- Most wines have chlorides less than 0.1.
+
+- 
+
+### What is/are the main feature(s) of interest in your dataset?
+The main feature in the data set is "Quality" of wine. I would like to predict what combination of values from different variable makes a better or a worse wine in quality.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+The meanings of all the variable are very new to me, so I only can tell based on the univariate graphs. The count of wine categorized by its quality shows a moutain shape, so I probably will investigate variables having similar shape. They are sulphates, pH, density, chlorides, residual sugar, fixed acidity, and volatile acidity.
+
+### Did you create any new variables from existing variables in the dataset?
+Not necessarily. The only consideration is to make quality variable to be a factor variable, but it looks like values under quality are precisely discrete. Therefore, I didn't change so, but I could change in the future analysis for any reason.
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+For the variable, "alcohol", I zoomed the distribution in a bit. I found that alcohol is not a continuous variable. 2nd decimal point is rarely appeared whereas the alcohol value jumps by the 1st decimal point.
+
+# Bivariate Plots Section
