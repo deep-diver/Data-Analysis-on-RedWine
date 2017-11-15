@@ -5,11 +5,11 @@ date: "10/31/2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE, echo=FALSE}
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(cowplot)
 library(GGally)
@@ -19,7 +19,7 @@ library(psych)
 
 # Univariate Plots Section
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 rwd <- read.csv('./wineQualityReds.csv')[2:13]
 str(rwd)
 summary(rwd)
@@ -41,7 +41,7 @@ summary(rwd)
 
 Red wine dataset consists of 13 variables, with 1599 observations (records).
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', message=FALSE}
 ggplot(data=rwd, aes(x=quality)) + 
   geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
   scale_x_continuous(breaks = seq(min(rwd$quality), max(rwd$quality), 1))
@@ -49,7 +49,7 @@ ggplot(data=rwd, aes(x=quality)) +
 
 The quality of wine ranges from 0 to 10. Only wines in quality from 3 to 8 exists in this dataset. Quality score, 5 and 6, are the most common ones. From that points, the number of wines decreases at bigger chance when quality score increases or decreases. Finally, it seems to be hard to find many wines marked as quality score 3 and 8. I wonder what makes to reduce the number of wines between qualities like 3 and 4, or 4 and 5, or 6 and 7, or 7 and 8. But, first, I want to know what this plot looks across other variables.
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', message=FALSE}
 acidity.fixed <- ggplot(rwd, aes(x=fixed.acidity)) + 
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9') +
   xlab('fixed acidity')
@@ -64,7 +64,7 @@ plot_grid(acidity.fixed, acidity.volatile,
 
 Two graphs have similar shape like having mountain in the middle, and the mountain shape indicates the range of where the majority number of wines are located. On the left and right side of the most common values, the count value rapidly decreases. This kind of trend seems similar to the quality value. I wonder how they are related. 
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', message=FALSE}
 citric.smallbin <- ggplot(rwd, aes(x=citric.acid)) + 
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9') + 
   xlab('citric.acid(bins=20)')
@@ -76,13 +76,13 @@ citric.largebins <- ggplot(rwd, aes(x=citric.acid)) +
 plot_grid(citric.smallbin, citric.largebins, ncol = 1)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 summary(rwd$citric.acid)
 ```
 
 The minimum value is 0, and the maximum value is 1 for citric acid. With the 20 bins, it looks the value fluctuates. After larging the number of bin, there are particularly many wines at citric acid value 0 and 0.5. I wonder what quality the wines in those citric acid values have.
 
-```{r fig.align='center', echo=FALSE}
+```{r fig.align='center', echo=FALSE, message=FALSE}
 sugar <- ggplot(rwd, aes(x=residual.sugar)) +
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
 
@@ -96,7 +96,7 @@ plot_grid(sugar, sugar.log, ncol = 1)
 
 The shape of the graph looks similar to fixed acidity and volatile acidity. I wonder how these 3 variables are related.
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 chlorides <- ggplot(rwd, aes(x=chlorides)) + 
   geom_histogram(bins = 100, color = 'black', fill = '#099DD9') + 
   xlab('chlorides (bins=50)')
@@ -115,7 +115,7 @@ summary(rwd$chlorides)
 
 Most wines have a chloride level between 0.07 and 0.09: median 0.079 and mean 0.08747. Even with log scaled distribution, lots of data are crowded in a very small range of chloride. I wonder if the most common chloride level is related to the worse or better quality.
 
-```{r fig.align='center', echo=FALSE}
+```{r fig.align='center', echo=FALSE, message=FALSE}
 free_sulfur_dioxide <- ggplot(rwd, aes(x=free.sulfur.dioxide)) + 
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9') 
 
@@ -139,7 +139,7 @@ plot_grid(free_sulfur_dioxide, total_sulfur_dioxide,
 
 Dioxide is measured in 2 different parts, free sulfur dioxide and total sulfur dioxide. They seem to show similar trend since total sulfur dioxide is the superset. I wonder wheather total sulfur dioxide has more impact on determining the quality of wine than just with free sulfur dioxide. For example, free sulfur dioxide graph shows a sink around value between 8 and 10. But total sulfur dioxide looks like more complete form.
 
-```{r fig.align='center', echo=FALSE}
+```{r fig.align='center', echo=FALSE, message=FALSE}
 ggplot(rwd, aes(x=density)) + 
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
 ```
@@ -177,7 +177,7 @@ table(rwd$alcohol)
 
 After counting all wines for each alcohol level, I see there is very small number of wine or zero number of wine when alcohol level has more than 2 decimal point. I wonder wines belonging to these alcohol level have anything to do with quality.
 
-```{r fig.align='center', echo=FALSE}
+```{r fig.align='center', echo=FALSE, message=FALSE}
 pH <- ggplot(rwd, aes(x=pH)) + 
   geom_histogram(bins = 20, color = 'black', fill = '#099DD9')
 
@@ -191,7 +191,7 @@ plot_grid(pH, pH.under, ncol=1)
 
 As said that most wines are between 3-4 on the pH scale, I see there are wines under 3.0 of pH. Since they are small in count, I wonder if wines belonging to under 3.0 of pH have good or bad quality.
 
-```{r fig.width=7,  fig.align='center', echo=FALSE}
+```{r fig.width=7,  fig.align='center', echo=FALSE, message=FALSE}
 
 sulphates <- ggplot(rwd, aes(x=sulphates)) +
   geom_histogram(bins=30, color = 'black', fill = '#099DD9') + 
@@ -242,19 +242,380 @@ Not necessarily. The only consideration is to make quality variable to be a fact
 For the variable, "alcohol", I zoomed the distribution in a bit. I found that alcohol is not a continuous variable. 2nd decimal point is rarely appeared whereas the alcohol value jumps by the 1st decimal point.
 
 # Bivariate Plots Section
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 rwd_cor <- round(cor(rwd), 3)
+rwd_cor
 ```
 
-The most correlated variable's coefficiency is 0.476, and that is alcohol. Therefore, there aren't a variable strongly correlated to the quality by looking at the coefficiency chart above. There are variables showing somewhat weekly related, but most of variables seem not correlated. I think I should look into each of those in more detail.
+The most correlated variable's coefficiency is 0.476, and that is alcohol. Therefore, there aren't a variable strongly correlated to the quality by looking at the coefficiency chart above. There are variables showing somewhat weekly related, but most of variables seem not correlated. 
 
-```{r fig.align='center', echo=FALSE}
+```{r fig.align='center', echo=FALSE, message=FALSE}
 corrplot.mixed(rwd_cor, upper = 'square', lower = 'number')
-pairs.panels(rwd, 
-             method = "pearson", # correlation method
-             hist.col = "#00AFBB",
-             density = TRUE,  # show density plots
-             ellipses = TRUE # show correlation ellipses
-             )
+rwd$quality_fa <- as.factor(rwd$quality)
+#pairs.panels(rwd, 
+#             method = "pearson", # correlation method
+#             hist.col = "#00AFBB",
+#             density = TRUE,  # show density plots
+#             ellipses = TRUE # show correlation ellipses
+#             )
 ```
 
+I will go through variables in order of higher coefficiency to the quality. Therefore, the first one should be alcohol, and the second is volatile acidity. I probably should go over citric acid and sulphates because those show relatively strong relationship. I am not really sure if I have to inspect other than that. However, I also should inspect variables related to alcohol, volatile acidity, citric acid, and sulphates.
+
+```{r fig.height=8, fig.align='center', echo=FALSE, message=FALSE}
+q_va_jitter <- ggplot(data = rwd, aes(x=volatile.acidity, y=quality)) + 
+  geom_point(position = 'jitter')
+
+q_va_box <- ggplot(data = rwd, aes(x = quality, y = volatile.acidity)) +
+  geom_boxplot(aes(group=quality)) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+q_va_den <- ggplot(rwd, aes(fixed.acidity, color=quality_fa)) +
+  geom_density()
+
+plot_grid(q_va_jitter, q_va_den, q_va_box, ncol=1)
+```
+
+Here, volatile acidity has a increasing trend when lower quality is given, meaning that higher quality wines tend to have less volatile acidity. However, I have to keep in mind that there are a number of less quality wines having less volatile acidity as much as the wines ranked as better one. **I wonder what would that be to make a less quality wine when it has less volatile acidity.**
+
+```{r fig.height=8, fig.align='center', echo=FALSE, message=FALSE}
+q_ac_jitter <- ggplot(data=rwd, aes(x=alcohol, y=quality)) + 
+  geom_jitter()
+
+q_ac_den <- ggplot(rwd, aes(alcohol, color=quality_fa)) +
+  geom_density()
+
+q_ac_box <- ggplot(data = rwd, aes(x = quality, y = alcohol)) +
+  geom_boxplot(aes(group=quality)) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_ac_jitter, q_ac_den, q_ac_box, ncol=1)
+```
+
+Alcohol shows a opposite trend to the volatile acidity. That is quality increases when the percentage of alcohol increases (positive). As investigated above in the univariate section, why the alcohol percentage looks somewhat descrete is that it increases by 1-decimal point for the most of time. **Correlationship between quality and alcohol also makes me to wonder what factors lower the quality of wine even though it has high alcohol percentage.**
+
+```{r fig.height=8, fig.align='center', echo=FALSE, message=FALSE}
+q_ca_jitter <- ggplot(data=rwd, aes(x=citric.acid, y=quality)) + 
+  geom_point(position = 'jitter')
+
+q_ca_den <- ggplot(rwd, aes(citric.acid, color=quality_fa)) +
+  geom_density()
+
+q_ca_box <- ggplot(data = rwd, aes(x = quality, y = citric.acid)) +
+  geom_boxplot(aes(group=quality)) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_ca_jitter, q_ca_den, q_ca_box, ncol=1)
+```
+
+Wines with certain quality should have more than certain amount of citric acid. As shown above, wines with quality below 5 rarely have citric acid of more of 0.25. I think it clearly shows a trend. If wines have more than 0.25 of citric acid, it looks like to be guaranteed to get more than or equal to quality of 5. But still, I wonder what makes wines to have better quality even though low level of citric acid is present.
+
+```{r fig.height=8, fig.align='center', echo=FALSE, message=FALSE}
+q_su_jitter <- ggplot(data=rwd, aes(x=sulphates, y=quality)) + 
+  geom_point(position = 'jitter')
+
+q_su_den <- ggplot(rwd, aes(sulphates, color=quality_fa)) +
+  geom_density()
+
+q_su_box <- ggplot(data = rwd, aes(x = quality, y = sulphates)) +
+  geom_boxplot(aes(group=quality)) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_su_jitter, q_su_den, q_su_box, ncol=1)
+```
+
+Sulphates also shows increasing relationship with quality. Even though correfficiency is lower than others, this one looks clearly shows the relationship better. When outliers are removed, I think it could give clearer look like below.
+
+```{r fig.height=5, fig.align='center', echo=FALSE, message=FALSE}
+ggplot(data=rwd, aes(x=sulphates, y=quality)) + 
+  geom_point(position = 'jitter') + 
+  scale_x_continuous(limits = c(0.4, quantile(rwd$sulphates, 0.95)))
+
+ggplot(rwd, aes(sulphates, color=quality_fa)) +
+  geom_density()+ 
+  scale_x_continuous(limits = c(0.4, quantile(rwd$sulphates, 0.95)))
+
+```
+
+```{r echo=FALSE, message=FALSE}
+tmp_rwd <- subset(rwd, sulphates <= quantile(sulphates, 0.95))
+data <- round(cor(tmp_rwd$quality, tmp_rwd$sulphates), 3)
+dimnames <- list(name=c("sulphates"))
+mat <- matrix(data, ncol=1, nrow=1, dimnames=dimnames)
+as.data.frame(as.table(mat))
+```
+
+After removing outliers in sulphates, the coefficiency increased from 0.251 to 0.409.
+
+```{r echo=FALSE, message=FALSE}
+a <- subset(rwd, fixed.acidity <= quantile(fixed.acidity, 0.95) & fixed.acidity <= quantile(fixed.acidity, 0.05))
+b <- subset(rwd, residual.sugar <= quantile(residual.sugar, 0.95) & residual.sugar <= quantile(residual.sugar, 0.05))
+c <- subset(rwd, free.sulfur.dioxide <= quantile(free.sulfur.dioxide, 0.95) & free.sulfur.dioxide <= quantile(free.sulfur.dioxide, 0.05))
+d <- subset(rwd, total.sulfur.dioxide <= quantile(total.sulfur.dioxide, 0.95) & total.sulfur.dioxide <= quantile(total.sulfur.dioxide, 0.05))
+e <- subset(rwd, density <= quantile(density, 0.95) & density <= quantile(density, 0.05))
+f <- subset(rwd, pH <= quantile(pH, 0.95) & pH <= quantile(pH, 0.05))
+
+tmp <- c(round(cor(a$quality, a$fixed.acidity), 3),
+         round(cor(b$quality, b$residual.sugar), 3),
+         round(cor(c$quality, c$free.sulfur.dioxide), 3),
+         round(cor(d$quality, d$total.sulfur.dioxide), 3),
+         round(cor(e$quality, e$density), 3),
+         round(cor(f$quality, f$pH), 3))
+
+dimnames <- list(name=c("fixed.acidity", "residual.sugar", "free.sulfur.dioxide", "total.sulfur.dioxide", "density", "pH"))
+mat <- matrix(tmp, ncol=1, nrow=6, dimnames=dimnames)
+as.data.frame(as.table(mat))
+```
+
+Speaking of outliers, it is worth to look into other variables with low coefficiency. However, after removing some of outliers for the rest of variables, it is hard to see a big change. 
+
+```{r fig.height=6, fig.width=10, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
+q_fa_jitter <- ggplot(data=rwd, aes(x=fixed.acidity, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_fa_box <- ggplot(data = rwd, aes(x = quality, y = fixed.acidity)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$fixed.acidity, 0.05), quantile(rwd$fixed.acidity, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+q_rs_jitter <- ggplot(data=rwd, aes(x=residual.sugar, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_rs_box <- ggplot(data = rwd, aes(x = quality, y = residual.sugar)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$residual.sugar, 0.05), quantile(rwd$residual.sugar, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_fa_jitter, q_fa_box, q_rs_jitter, q_rs_box, ncol=2)
+```
+
+Just in case that I could find some valuable information from the rest of variables, I am going through each one very shortly.
+
+As shown in the graph, the median value of the **fixed acidity increases by the quality**. On the other hand, the residual sugar doesn't look like showing either positive or negative relationships with quality.
+
+```{r fig.height=6, fig.width=10, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
+q_fsd_jitter <- ggplot(data=rwd, aes(x=free.sulfur.dioxide, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_fsd_box <- ggplot(data = rwd, aes(x = quality, y = free.sulfur.dioxide)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$free.sulfur.dioxide, 0.05), quantile(rwd$free.sulfur.dioxide, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+q_tsd_jitter <- ggplot(data=rwd, aes(x=total.sulfur.dioxide, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_tsd_box <- ggplot(data = rwd, aes(x = quality, y = total.sulfur.dioxide)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$total.sulfur.dioxide, 0.05), quantile(rwd$total.sulfur.dioxide, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_fsd_jitter, q_fsd_box, q_tsd_jitter, q_tsd_box, ncol=2)
+```
+
+The median value of free sulfur dioxide increases by quality, but it stops increasing when the quality reaches 5. It slightly decreases by then. Better quality wines seem to have less free sulfur dioxide. There should be somthing to make wines worse even when free sulfur dioxide is low.
+
+The overall trend of total sulfur dioxide is very similar to the free sulfur dioxide.
+
+```{r fig.height=6, fig.width=10, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
+q_den_jitter <- ggplot(data=rwd, aes(x=density, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_den_box <- ggplot(data = rwd, aes(x = quality, y = density)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$density, 0.05), quantile(rwd$density, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+q_ph_jitter <- ggplot(data=rwd, aes(x=pH, y=quality)) + 
+  geom_point(position = 'jitter') 
+q_ph_box <- ggplot(data = rwd, aes(x = quality, y = pH)) +
+  geom_boxplot(aes(group=quality)) + 
+  scale_y_continuous(limits = c(quantile(rwd$pH, 0.05), quantile(rwd$pH, 0.95))) + 
+  stat_summary(fun.y=median, color="red", geom="line", size = 1) + 
+  stat_summary(fun.y = "median", color = "red", size = 3, geom = "point") + 
+  ggtitle('median trend')
+
+plot_grid(q_den_jitter, q_den_box, q_ph_jitter, q_ph_box, ncol=2)
+```
+
+Both of the density and pH have a negative relationship with quality. The density shows a weeker relationship than pH.
+
+Beside the main variable, quality, there are variables related to each other. It is worth to look relationships of two variables having strong relationship. 
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+fa_ca <- ggplot(data=rwd, aes(x=fixed.acidity, y=citric.acid)) + 
+  geom_point()
+fa_ph <- ggplot(data=rwd, aes(x=fixed.acidity, y=pH)) + 
+  geom_point()
+plot_grid(fa_ca, fa_ph, ncol=1)
+```
+
+Fixed acidity increases when higher citric acid is given. On the other hand, it also increases when less pH is given. 
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+su_ch_1 <- ggplot(data=rwd, aes(x=sulphates, y=citric.acid)) + 
+  geom_point() + 
+  scale_x_continuous(limits = c(quantile(rwd$sulphates, 0.05), quantile(rwd$sulphates, 0.95)))
+su_ch_2 <- ggplot(data=rwd, aes(x=sulphates, y=chlorides)) + 
+  geom_point() + 
+  scale_x_continuous(limits = c(quantile(rwd$sulphates, 0.05), quantile(rwd$sulphates, 0.95)))
+su_ch_3 <- ggplot(data=rwd, aes(x=sulphates, y=volatile.acidity)) + 
+  geom_point() + 
+  scale_x_continuous(limits = c(quantile(rwd$sulphates, 0.05), quantile(rwd$sulphates, 0.95)))
+
+plot_grid(su_ch_1, su_ch_2, su_ch_3, ncol=1)
+```
+
+Sulphates of wines doesn't look like having any relationship with other variables to determine wine quality. It just itself may have strong positive relationship with wine quality.
+
+```{r fig.height=6, fig.align='center', echo=FALSE, warning=FALSE}
+va_ca <- ggplot(data=rwd, aes(x=volatile.acidity, y=citric.acid)) + 
+  geom_point()
+al_de <- ggplot(data=rwd, aes(x=alcohol, y=density)) + 
+  geom_point()
+ca_ph <- ggplot(data=rwd, aes(x=citric.acid, y=pH)) + 
+  geom_point()
+plot_grid(va_ca, al_de, ca_ph, ncol=1)
+```
+
+Higher volatile acidity can be found when less citric acid is present. Likewise, higher alcohol and citric acid can be found when less density and pH are present respectively.
+
+# Bivariate Analysis
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+Volatile acidity, alcohol, citric acid, and sulphates strongly correlates with quality comparing to other variables. However, some of the other variables also show distinctive pattern influenced by the quality.
+
+- Positive relationship: alcohol, citric acid, sulphates, fixed acidity
+- Negative relationship: volatile acidity, density, pH
+- Mountain-lie relationship: free/total sulfur dioxide
+
+Even though a variable has a positive relationship with quality, there are lots of wines in low quality even when the variable's value is close to the better quality wines.
+
+This happens almost in every variables, so it is required to inspect how the quality changes not by only variable but by multi variables.
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+- between fixed acidity and citric acid (positive)
+- between fixed acidity and pH (negative)
+- between volatile acidity and citric acid (negative)
+- between alcohol and density (negative)
+- between citric acid and pH (negative)
+
+# Multivariate Plots Section
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=alcohol, density)) + 
+  geom_point(aes(color=quality_fa), size=2) + 
+  scale_color_brewer(type = 'div', palette = 1) 
+```
+
+The relationship between alcohol and density almost doesn't show any trend. The alcohol itself mostly contribute to the quality decision. There are still lots of similar quality wines with similar density values regardless of alcohol value. 
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=fixed.acidity, citric.acid)) + 
+  geom_point(aes(color=quality_fa), size=2) + 
+  scale_color_brewer(type = 'div', palette = 1) 
+```
+
+The relationship between citric acid and fixed acidity somewhat clearly show the quality trend. For instance, when higher fixed acdity and higher citric acid are present, a wine seems to become a better quality wine. However, it is interesting that there are stil good wines with low fixed acidity and low citric acid. 
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=volatile.acidity, citric.acid)) + 
+  geom_point(aes(color=quality_fa), size=2) + 
+  scale_color_brewer(type = 'div', palette = 1) 
+```
+
+The relationship between citric acid and volatile acidity is opposite to the previous one (citric acid v.s. fixed acidity).
+
+```{r fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=pH, citric.acid)) + 
+  geom_point(aes(color=quality_fa), size=2) + 
+  scale_color_brewer(type = 'div', palette = 1) 
+```
+
+We've seen that citric acid has a positive relationship with quality, so it is obvious there are more of better quality wines with higher value of citric acid. However, on the plot above, pH doesn't play an important role to determine quality. For example, for the same value of range of citric acid, the value of pH doesn't separate wines into better and less better groups.
+
+```{r fig.width=9, fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=fixed.acidity, y=citric.acid)) + 
+  geom_point(aes(color=quality_fa, size=alcohol), alpha=0.5) + 
+  scale_color_brewer(type = 'div', palette = 1) + 
+  scale_x_continuous(limits = c(min(rwd$fixed.acidity), quantile(rwd$fixed.acidity, 0.95)))
+```
+
+The above plot shows relationships between four different variables, citric acid, fixed acidity, alcohol, and quality. This is pretty much the same to the second plot on this section, but alcohol is taken into consideration too. 
+
+This plot somewhat demystifies why wines could have good quality even though low fixed acidity and low citric acid are present. They contain high level of alcohol. Similarily, wines with high quality and high citric acid could be rated as less quality when they contain less alcohol.
+
+```{r fig.width=9, fig.align='center', echo=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=volatile.acidity, y=citric.acid)) + 
+  geom_point(aes(color=quality_fa, size=alcohol), alpha=0.5) + 
+  scale_color_brewer(type = 'div', palette = 1) + 
+  scale_x_continuous(limits = c(min(rwd$volatile.acidity), quantile(rwd$volatile.acidity, 0.95)))
+```
+
+Fixed acidity and volatile acidity playes the opposite role to determine quality. Less volatile acidity can contribute wines to be better ones. 
+
+Just like the previous plot, this plot gives a good understanding of the quality of wine. Even though less volatile and high citric acid are given, wines can be less quality when they contain less alcohol. Similarily, wines less volatile and less citric acid can have better quality when high alcohol is present.
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+ggplot(data=rwd, aes(x=quality)) + 
+  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(breaks = seq(min(rwd$quality), max(rwd$quality), 1))
+```
+
+### Description One
+The distribution of wine quality appears to be normal. Quality between 5 and 6 are most commonly found. On the other hand it is rare to find wines in range of 3 and 4 or 7 and 8. It is probably hard to produce good wine, and it is probably hard to produce bad wine as well. Perhaps, it is very easy to achieve just normal quality wine.
+
+### Plot Two
+```{r fig.height=6, fig.width=9, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
+plot_two_1 <- ggplot(data=rwd, aes(x=sulphates, y=quality)) + 
+  geom_point(position = 'jitter') + 
+  scale_x_continuous(limits = c(0.4, quantile(rwd$sulphates, 0.95)))
+
+plot_two_2 <- ggplot(rwd, aes(sulphates, color=quality_fa)) +
+  geom_density()+ 
+  scale_x_continuous(limits = c(0.4, quantile(rwd$sulphates, 0.95)))
+
+plot_grid(plot_two_1, plot_two_2, ncol = 1)
+```
+
+### Description Two
+Sulphates doesn't create relationship with other variables to determine wine quality. Rather, it only itself creates a strongly positive relationship with quality. As described, sulphates is a win additive meaning it is not situated naturally. Probably, that is why it doesn't have any relationship with other variables to assess wine quality. Additionally, high level of sulphates may be hard to be added to wines.
+
+### Plot Three
+```{r fig.height=8, fig.width=9, fig.align='center', echo=FALSE, warning=FALSE}
+plot_three_1 <- ggplot(data=rwd, aes(x=fixed.acidity, y=citric.acid)) + 
+  geom_point(aes(color=quality_fa, size=alcohol), alpha=0.5) + 
+  scale_color_brewer(type = 'div', palette = 1)
+
+plot_three_2 <- ggplot(data=rwd, aes(x=volatile.acidity, y=citric.acid)) + 
+  geom_point(aes(color=quality_fa, size=alcohol), alpha=0.5) + 
+  scale_color_brewer(type = 'div', palette = 1)
+
+plot_grid(plot_three_1, plot_three_2, ncol = 1)
+```
+
+### Description Three
+High fixed acidity, low volatile acidity, high citric acid, and high alcohol seem to be important to determine wine quality. Especially, alcohol level is important. 
+
+# Reflection
+The red wine data set contains information on almost 1,599 wines across twelve variables from around 2009. I started by understanding the individual variables in the data set, and then I explored interesting questions and leads as I continued to make observations on plots. Eventually, I explored the quality of wines across many variables and created a linear model to predict diamond prices.
+
+There was clear two kinds of trend. The one is between the sulphates of a wine and its quality, and the other one is between fixed acidity, volatile acidity, citric acid, alcohol, and quality. I was surprised that lots of features, especially alcohol level, of a wine play an important role to determine its quality. Also, I was surprised that sulphates of a wine has a positive relationship with its quality because I though it could harm the wine. 
+
+Some limitations of this model include the source of the data. Given that the number of observation may not be big enough to determine very clear trends. To investigate this data further, I would examine other dataset provided for white wine quality. I could expect to find some common sense between them so that I could support my concolusion stronger. 
