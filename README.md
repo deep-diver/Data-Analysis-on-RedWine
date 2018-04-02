@@ -10,6 +10,19 @@
 ## About Project
 This project has two different purposes. One is to practice EDA(Exploratory Data Analysis), and the other is to familiarize with R language and its libraries. EDA has been done with Red Wind Data set collected around 2009. The main goal of the analysis to predict wine quality with variables(features) that the wine contains.
 
+## Brief Summary
+### PLOT1
+![](./plot1.png)
+
+### PLOT2
+Sulphates and alcohol don’t create relationship with other variables to determine wine quality. Rather, it only itself creates a strongly positive relationship with quality. Additionally, as described, sulphates is a wine additive meaning it is not situated naturally. Probably, that is why it doesn’t have any relationship with other variables to assess wine quality. Additionally, high level of sulphates may be hard to be added to wines.
+
+![](./plot2.png)
+
+### PLOT3
+High fixed acidity, low volatile acidity, and high citric acid, seem to be important to determine wine quality.
+![](./plot3.png)
+
 ## About the Data set
 The data set contains 1,599 observations on Red Wines. There are 12 different variables to describe a wine. Each variable is 
 
